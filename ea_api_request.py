@@ -2,8 +2,9 @@ import json
 
 import pandas as pd
 import requests
+import numpy as np
 
-import db_utils
+import db_utils as db_utils
 
 
 def get_stations():
@@ -14,7 +15,8 @@ def get_stations():
     data = r.json()
 
     df = pd.json_normalize(data, record_path=["items"]).drop(['measures'], axis=1)
-
+    df = df.replace(np.nan, 0)
+    df.replace('Nan', 'Blank')
     return df 
 
 def get_measures_station(station):
@@ -44,20 +46,20 @@ def get_readings_sql(measure,start_date,end_date):
     return df 
 df_stations = get_stations()
 
-#df_stations.head()
+# #df_stations.head()
 
-df_measures = get_measures_station(df_stations['stationReference'][173])
+# df_measures = get_measures_station(df_stations['stationReference'][173])
 
-#df_measures.head()
+# #df_measures.head()
 
-df_results.head()
+# df_results.head()
 
 
-print(df_measures["@id"][0])
+# print(df_measures["@id"][0])
 
-df_results = get_readings_sql(measure = df_measures["@id"][0], start_date="'2022-04-09T02:00:00Z'", end_date="'2022-04-09T03:00:00Z'")
+# df_results = get_readings_sql(measure = df_measures["@id"][0], start_date="'2022-04-09T02:00:00Z'", end_date="'2022-04-09T03:00:00Z'")
 
-df_results.head(10)
+# df_results.head(10)
 
 
 
