@@ -8,7 +8,7 @@ import db_utils as db_utils
 
 
 def get_stations():
-    r = requests.get('https://environment.data.gov.uk/flood-monitoring/id/stations?_limit=10000')
+    r = requests.get('http://environment.data.gov.uk/flood-monitoring/id/stations?_limit=10000')
 
    
 
@@ -30,6 +30,8 @@ def get_measures_station(station):
 
     return df 
 
+
+
 def get_readings_sql(measure,start_date,end_date):
 
     
@@ -37,7 +39,7 @@ def get_readings_sql(measure,start_date,end_date):
 
     cur = con.cursor()
 
-    df = pd.read_sql_query(f"""SELECT * from all_readings WHERE measure='{measure}'   AND 
+    df = pd.read_sql_query(f"""SELECT * from "values" WHERE measure='{measure}'   AND 
                           datetime(dateTime) >= datetime({start_date})
                          AND datetime(dateTime) <= datetime({end_date}) """, con)
 
@@ -46,20 +48,10 @@ def get_readings_sql(measure,start_date,end_date):
     return df 
 df_stations = get_stations()
 
-# #df_stations.head()
 
-# df_measures = get_measures_station(df_stations['stationReference'][173])
-
-# #df_measures.head()
-
-# df_results.head()
-
-
-# print(df_measures["@id"][0])
-
-# df_results = get_readings_sql(measure = df_measures["@id"][0], start_date="'2022-04-09T02:00:00Z'", end_date="'2022-04-09T03:00:00Z'")
-
-# df_results.head(10)
+#  df = pd.read_sql_query(f"""SELECT * from readings WHERE measure='{measure}'   AND 
+#                          datetime(date_time) >= datetime({start_date})
+#                         AND datetime(date_time) <= datetime({end_date}) """, con)
 
 
 
