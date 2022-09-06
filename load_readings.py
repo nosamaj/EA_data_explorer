@@ -8,7 +8,7 @@ import sys
 con = db_connect()
 
 df_all = pd.DataFrame()
-datadir = "./raw"
+datadir = "/home/nosamaj/EAData/Data"
 
 for file in os.listdir(datadir):
     df = pd.read_csv(f"{datadir}/{file}")
