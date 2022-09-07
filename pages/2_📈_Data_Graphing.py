@@ -29,7 +29,7 @@ station_id = stations_df['stationReference'][value]
 
 df_measures =  eaapi.get_measures_station(station_id)
 
-st.markdown("###Table of measures from selection station")
+st.markdown("### Table of measures from selection station")
 st.write(df_measures.head())
 
 df_measures['Label'] = df_measures['parameterName']+" "+df_measures['qualifier'] +" "+df_measures['valueType']
@@ -51,7 +51,6 @@ date_range= st.sidebar.date_input(
 
 start_date=date_range[0].isoformat()
 end_date=date_range[1].isoformat()
-st.write(start_date)
 
 df_data = eaapi.get_readings_sql(measure=df_measures['@id'][value2],start_date=f"'{start_date}T00:00:00Z'", end_date=f"'{end_date}T23:59:59Z'")
 df_data = df_data.sort_values(by='dateTime')
