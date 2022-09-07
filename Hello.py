@@ -7,11 +7,12 @@ import ea_api_request
 
 
 st.set_page_config(
-    page_title="Hello",
-    page_icon="👋",
+    page_title="Home",
+    page_icon="🏠",
+    layout='wide'
 )
 
-st.sidebar.success("Select a demo above.")
+
 
 st.title('EA Open Data Viewer')
 

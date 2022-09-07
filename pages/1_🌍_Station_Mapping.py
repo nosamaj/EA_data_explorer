@@ -5,6 +5,8 @@ import ea_api_request
 #import utils.create_db_tables as create_db_tables
 import leafmap.foliumap as leafmap
 
+st.set_page_config(layout='wide')
+
 st.title('EA Open Data Viewer')
 st
 st.markdown('''This application will allow the user to explore the EA flooding API for
