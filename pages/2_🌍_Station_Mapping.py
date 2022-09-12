@@ -8,7 +8,7 @@ import leafmap.foliumap as leafmap
 st.set_page_config(layout='wide')
 
 st.title('EA Open Data Viewer')
-st
+
 st.markdown('''This application will allow the user to explore the EA flooding API for
 - Rainfall data from the EA Gauges
 - River Level and Flow data 
