@@ -25,8 +25,7 @@ value = st.sidebar.selectbox("Station", options, format_func=lambda x: station_l
 station_id = stations_df['stationReference'][value]
 
 #st.write(f"{station_id}")
-
-
+sour
 df_measures =  eaapi.get_measures_station(station_id)
 
 st.markdown("### Table of measures from selection station")
@@ -61,3 +60,17 @@ fig = px.line(df_data, x="dateTime", y="value",title = f"{stations_df['label'][v
 fig.update_layout(autotypenumbers='convert types')
 
 st.write(fig)
+
+def convert_df(df):
+   return df.to_csv().encode('utf-8')
+
+
+csv = convert_df(df_data)
+
+st.sidebar.download_button(
+   "Press to Download",
+   csv,
+   "file.csv",
+   "text/csv",
+   key='download-csv'
+)
