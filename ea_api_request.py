@@ -38,8 +38,12 @@ def get_readings_sql(measure,start_date,end_date):
     con = db_utils.db_connect()
 
     cur = con.cursor()
+    
+    cur.execute(f"""ATTACH DATABASE the_database_path AS database2""")
 
-    df = pd.read_sql_query(f"""SELECT * from "values" WHERE measure='{measure}'   AND 
+    cur.execute(f"""PRAGMA cache_size = -128000""")
+
+    df = pd.read_sql_query(f"""SELECT * from "values" WHERE measure = '{measure}'  AND 
                           datetime(dateTime) >= datetime({start_date})
                          AND datetime(dateTime) <= datetime({end_date}) """, con)
 
@@ -48,6 +52,15 @@ def get_readings_sql(measure,start_date,end_date):
     return df 
 df_stations = get_stations()
 
+
+def get_readings_api(measure):
+    r = requests.get(f"http://environment.data.gov.uk/flood-monitoring/id/measures/{measure}/readings")
+    data = r.json()
+
+    df = pd.json_normalize(data, record_path=["items"])
+
+
+    return df 
 
 #  df = pd.read_sql_query(f"""SELECT * from readings WHERE measure='{measure}'   AND 
 #                          datetime(date_time) >= datetime({start_date})
