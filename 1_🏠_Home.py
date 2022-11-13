@@ -12,7 +12,7 @@ st.set_page_config(
     layout='wide'
 )
 
-
+    
 
 st.title('EA Open Data Viewer')
 
