@@ -1,4 +1,3 @@
-import plotly.express as px
 import sys
 import streamlit as st
 import datetime
@@ -20,11 +19,14 @@ end_date =""
 data_label = ""
 csv=""
 
-@st.cache
+@st.cache_data
 def getstations():
    stations_df = eaapi.get_stations()
    return stations_df
-
+      
+def getmeasures():
+      df_measures =  eaapi.get_measures_station(station_id)
+      return df_measures
 
 def convert_df(df):
    return df.to_csv().encode('utf-8')
@@ -50,9 +52,10 @@ def plot():
    st.write(fig)
 
    csv = convert_df(df_data)
+
 with st.expander('Guide'):
    st.markdown("""# Graph data from multiple data types from multiple sites
-   - Select a station in the sidebar and refresh the details and press "Add to Graph"
+   - Select a station in the sidebar and the details will refresh automatically
    - Then, select the measure to get data from below
    - Repeat the selection of sites and measures as desired
    - The graphs will temporarily dissappear after selecting another station.
@@ -76,79 +79,40 @@ if "station_value" not in st.session_state:
    st.session_state.station_value = 0
 
 with st.sidebar.form(key='form1', clear_on_submit=False):
+    st.write("Select a station and get details to see the measures recorded")
+    station_value = st.selectbox("Station", options, format_func=lambda x: station_lables[x], key="station_value")
+    station_label = station_lables[station_value]
+    station_id = stations_df['stationReference'][station_value]
 
-   st.write("Select a station and get details to see the measures recorded")
+    update_measures = st.form_submit_button("Update Measures")
 
-   station_value = st.selectbox("Station", options, format_func=lambda x: station_lables[x],key="station_value")
+    df_measures = getmeasures()
+    #st.write(df_measures.head())
 
-   station_label = station_lables[station_value]
+    df_measures['Label'] = df_measures['parameterName'] + " " + df_measures['qualifier'] + " " + df_measures['valueType']
+    measure_labels = df_measures['Label'].tolist()
+    measure_checkboxes = st.multiselect("Select measures", measure_labels)
 
-   #station_selection = st.selectbox('Which station should we view?', station_lables)
+    date_range = st.date_input("Select a data range to view data from and to (inclusive)", (datetime.date(2022, 8, 1),datetime.date.today()))
 
-   #st.write(f"{value}")
+    
+    add_to_graph = st.form_submit_button("Add to Graph")
 
-   station_id = stations_df['stationReference'][station_value]
+if update_measures:
+    df_measures = getmeasures()
+    df_measures['Label'] = df_measures['parameterName'] + " " + df_measures['qualifier'] + " " + df_measures['valueType']
+    measure_labels = df_measures['Label'].tolist()
+    measure_checkboxes = st.multiselect("Select measures", measure_labels)
 
-   #st.write(f"{station_id}")
+if add_to_graph:
+    start_date = date_range[0].isoformat()
+    end_date = date_range[1].isoformat()
 
-   def getmeasures():
-      df_measures =  eaapi.get_measures_station(station_id)
-      return df_measures
-
-   df_measures = getmeasures()
-
-   #st.markdown("### Table of measures from selection station")
-   st.write(df_measures.head())
-
-   df_measures['Label'] = df_measures['parameterName']+" "+df_measures['qualifier'] +" "+df_measures['valueType']
-
-
-   measure_lables = df_measures['Label']
-
-
-   options2 = list(range(len(measure_lables)))
-
-
-
-
-   getstations = st.form_submit_button("Get Station Details")
-
-   if getstations:
-
-      st.write("now select the data for this station")
-
-with st.form(key='form2', clear_on_submit=False):
-
-
-   measure_value = st.selectbox("measurement", options2, format_func=lambda x:measure_lables[x],key="measure_values")
-
-   if "measure_values" not in st.session_state:
-      st.session_state.measure_values = [0]
-
-  # for value in measure_values:
-   measure =  df_measures['notation'][measure_value]
-   data_label = measure_lables[measure_value]
-      #st.session_state.measures_list.append(measure) if not measure in st.session_state.measures_list else measure
-
-
-   date_range= st.date_input(
-      "Select a data range to view data from and to (inclusive)",
-      (datetime.date(2022, 8, 1),datetime.date.today())
-      )
-
-
-   submitted = st.form_submit_button("Add to Graph")
-
-   if submitted:
-      
-      start_date=date_range[0].isoformat()
-      end_date=date_range[1].isoformat()
-
-      plot()
-
-      st.write(measure)
-
-
+    for measure_checkbox in measure_checkboxes:
+        measure_value = measure_labels.index(measure_checkbox)
+        measure = df_measures['notation'][measure_value]
+        data_label = measure_labels[measure_value]
+        plot()
 
 
 st.sidebar.download_button(
