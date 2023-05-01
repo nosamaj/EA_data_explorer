@@ -133,8 +133,7 @@ with st.form(key='form2', clear_on_submit=True):
 
    date_range= st.date_input(
       "Select a data range to view data from and to (inclusive)",
-      (datetime.date(2022, 8, 1),datetime.date.today())
-      )
+      start_date ,end_date)
 
 
    submitted = st.form_submit_button("Add to Graph")
