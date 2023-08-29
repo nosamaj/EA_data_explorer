@@ -1,4 +1,4 @@
-from db_utils import db_connect
+from db_utils2 import db_connect
 
 con = db_connect()
 cur = con.cursor()

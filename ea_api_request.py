@@ -4,7 +4,7 @@ import pandas as pd
 import requests
 import numpy as np
 
-import db_utils as db_utils
+import db_utils2 as db_utils2
 
 
 def get_stations():
@@ -35,7 +35,7 @@ def get_measures_station(station):
 def get_readings_sql(measure,start_date,end_date):
 
     
-    con = db_utils.db_connect()
+    con = db_utils2.db_connect()
 
     cur = con.cursor()
     
