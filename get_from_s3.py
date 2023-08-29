@@ -3,40 +3,33 @@ import boto3
 # Set up S3 client for Linode object storage
 s3 = boto3.client(
     "s3",
-    endpoint_url="https://your-bucket-name.your-region.linodeobjects.com",
-    aws_access_key_id="your-access-key",
-    aws_secret_access_key="your-secret-key",
+    endpoint_url="https://eu-central-1.linodeobjects.com",
+    aws_access_key_id="",
+    aws_secret_access_key="",
 )
 
 # List all objects in t
 # 7480.he bucket
-response = s3.list_objects(Bucket="your-bucket-name")
-for obj in response["Contents"]:
-    print(obj["Key"])
 
-import boto3
-import re
-from datetime import datetime
 
-# Set up S3 client
-s3 = boto3.client("s3")
 
-# Set up bucket name and prefix
-bucket_name = "your_bucket_name"
-prefix = "your_prefix"
+# Get the bucket name
+bucket_name = 'bellas-horde'
 
-# Get list of all objects in bucket with specified prefix
+# Get the prefix
+prefix = 'EAData'
+# Specify the local directory to download to
+local_directory = '/home/nosamaj/EAdata'
+
+# List objects in the specified prefix
 objects = s3.list_objects_v2(Bucket=bucket_name, Prefix=prefix)
 
-# Define regular expression pattern for filename (dd-mm-yyyy)
-pattern = re.compile(r"\d{2}-\d{2}-\d{4}")
-
-# Loop through objects and download files with matching pattern
-for obj in objects["Contents"]:
-    filename = obj["Key"]
-    match = re.search(pattern, filename)
-    if match:
-        # Convert matched string to datetime object
-        dt = datetime.strptime(match.group(), "%d-%m-%Y")
-        # Download object if filename matches pattern
-        s3.download_file(bucket_name, filename, f'{dt.strftime("%Y-%m-%d")}.txt')
+# Download each object
+for obj in objects.get('Contents', []):
+    key = obj['Key']
+    if key.endswith('.parquet'):
+        local_path = os.path.join(local_directory, os.path.basename(key))
+        
+        # Download the object
+        s3.download_file(bucket_name, key, local_path)
+        print(f'Downloaded: {key} to {local_path}')
